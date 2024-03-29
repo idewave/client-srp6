@@ -1,0 +1,1 @@
+This is SRP6 library implemented for test purposes to use with [TentaCLI](https://github.com/idewave/tentacli). The only exported function `test_srp6` returns `strong session key (K)` and `client proof (M)`.
