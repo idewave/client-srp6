@@ -83,6 +83,8 @@ BigNum SRP6::calculate_proof() {
 
     M.from_bin(result, 20);
 
+    EVP_MD_CTX_free(digest);
+
     return M;
 }
 
@@ -122,6 +124,8 @@ void SRP6::calculate_u() {
     EVP_DigestFinal(digest, result, nullptr);
 
     u.from_bin(result, 20);
+
+    EVP_MD_CTX_free(digest);
 }
 
 void SRP6::calculate_public_ephemeral() {
@@ -166,9 +170,13 @@ void SRP6::calculate_interleaved() {
 
     K.from_bin(session_key, 40);
 
+    EVP_MD_CTX_free(digest);
+
     delete[] odd;
     delete[] even;
     delete[] session_key;
+    delete[] result_odd;
+    delete[] result_even;
 }
 
 unsigned char *SRP6::calculate_xor_hash() {
@@ -189,6 +197,8 @@ unsigned char *SRP6::calculate_xor_hash() {
         N_hash[i] = N_hash[i] ^ g_hash[i];
     }
 
+    EVP_MD_CTX_free(digest);
+
     return N_hash;
 }
 
@@ -199,6 +209,8 @@ unsigned char *SRP6::calculate_username_hash() {
     EVP_DigestInit(digest, EVP_sha1());
     EVP_DigestUpdate(digest, username.c_str(), username.length());
     EVP_DigestFinal(digest, result, nullptr);
+
+    EVP_MD_CTX_free(digest);
 
     return result;
 }
