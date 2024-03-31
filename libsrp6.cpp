@@ -90,15 +90,6 @@ void SRP6::calculate_x() {
     EVP_MD_CTX* digest = EVP_MD_CTX_new();
     auto* result = new unsigned char[20];
 
-    std::vector<uint8_t> myVector = {1, 2, 3};
-    EVP_DigestInit(digest, EVP_sha1());
-    EVP_DigestUpdate(digest, myVector.data(), 3);
-
-    EVP_DigestFinal(digest, result, nullptr);
-
-    BigNum p1;
-    p1.from_bin(result, 20);
-
     EVP_DigestInit(digest, EVP_sha1());
     EVP_DigestUpdate(digest, username.c_str(), username.length());
     EVP_DigestUpdate(digest, ":", 1);
@@ -106,12 +97,12 @@ void SRP6::calculate_x() {
 
     EVP_DigestFinal(digest, result, nullptr);
 
-    BigNum p;
-    p.from_bin(result, 20);
+    BigNum identity_hash;
+    identity_hash.from_bin(result, 20);
 
     EVP_DigestInit(digest, EVP_sha1());
     EVP_DigestUpdate(digest, s.to_bin(32), 32);
-    EVP_DigestUpdate(digest, p.to_bin(20), 20);
+    EVP_DigestUpdate(digest, identity_hash.to_bin(20), 20);
 
     EVP_DigestFinal(digest, result, nullptr);
 
