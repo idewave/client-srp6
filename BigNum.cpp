@@ -1,5 +1,8 @@
 #include <string>
+#include <vector>
 #include "BigNum.h"
+#include <algorithm>
+#include <cstring>
 
 BigNum::BigNum() {
     bn = BN_new();
@@ -28,6 +31,7 @@ unsigned char* BigNum::to_bin(int length) {
     temp = new unsigned char[length];
 
     BN_bn2lebinpad(bn, temp, length);
+//    BN_bn2bin(bn, temp);
 
     return temp;
 }
@@ -112,4 +116,30 @@ BigNum BigNum::mod_exp(const BigNum &b, const BigNum &c) {
 
 void BigNum::randomize(int bytes_amount) {
     BN_rand(bn, bytes_amount * 8, 0, 1);
+}
+
+int BigNum::GetNumBytes(void) const
+{
+    return BN_num_bytes(bn);
+}
+
+std::vector<uint8_t> BigNum::as_byte_array(int minSize, bool reverse) const
+{
+    int length = (minSize >= GetNumBytes()) ? minSize : GetNumBytes();
+
+    std::vector<uint8_t> byteArray(length);
+
+    // If we need more bytes than length of BigNumber set the rest to 0
+    if (length > GetNumBytes())
+        memset((void*)byteArray.data(), 0, length);
+
+    // Padding should add leading zeroes, not trailing
+    auto const paddingOffset = length - GetNumBytes();
+
+    BN_bn2bin(bn, (unsigned char*)byteArray.data() + paddingOffset);
+
+    if (reverse)
+        std::reverse(byteArray.begin(), byteArray.end());
+
+    return byteArray;
 }

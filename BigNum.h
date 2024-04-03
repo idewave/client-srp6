@@ -1,6 +1,7 @@
 #pragma once
 
 #include <openssl/bn.h>
+#include <vector>
 
 class BigNum {
 public:
@@ -23,6 +24,10 @@ public:
     void randomize(int bytes_amount);
 
     BigNum& operator=(const BigNum& b);
+
+    std::vector<uint8_t> as_byte_array(int minSize = 0, bool reverse = true) const;
 protected:
     BIGNUM* bn;
+
+    [[nodiscard]] int GetNumBytes() const;
 };
